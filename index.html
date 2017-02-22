@@ -1,0 +1,111 @@
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title> 簡報 </title> 
+    <script src="https://unpkg.com/vue/dist/vue.js"></script>
+</head>
+
+<body>
+
+<style>
+
+.noselect {
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                          supported by Chrome and Opera */
+}
+
+body{
+   background: #4A5043; 
+}
+
+.page{
+    position: absolute;
+    width: 900px;
+    height: 556px;
+    left: 50%;
+    top: 80px;
+    margin-left: -450px;
+    background-color: #9AC2C9;
+    color: #000;
+
+    padding-left: 40px;
+}
+
+h1{
+    font-size: 40pt;
+}
+
+.content{
+    font-size: 20pt;
+}
+
+.slide-fade-enter-active {
+    transition: all 0.8s ease;
+}
+.slide-fade-leave-active {
+    transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+}
+
+.slide-fade-enter{
+    transform: translateX(50px);
+    opacity: 0;
+} 
+
+.slide-fade-leave-active {
+    transform: translateX(50px);
+    opacity: 0;
+}
+
+</style>
+
+<div id="ppt">
+    <transition-group name="slide-fade">
+        <div class="no-select page"
+             @click="next" @contextmenu="$event.preventDefault();prev();"
+             v-for="(ppt, index) in ppt_list" v-if="index === current_ppt_id" v-bind:key="index">
+            <h1>{{ppt.title}}</h1>
+            <div v-html="ppt.content" class="content">
+            </div>
+        </div>
+    </transition-group>
+</div>
+
+<script>
+
+var ppt = new Vue({
+    el: "#ppt",
+    data: {
+        current_ppt_id : 0,
+        ppt_list : [{
+            "title" : "IF的語法",
+            "content" : "<a href='#'>內容</a>"
+        }, {
+            "title" : "IF的實際例子",
+            "content" : "內容"
+        }]
+    },
+    computed: {
+        current_ppt : function(){
+            return this.ppt_list[this.current_ppt_id];
+        }
+    },
+    methods: {
+        next : function(){
+            if(this.current_ppt_id + 1 < this.ppt_list.length)
+                this.current_ppt_id += 1;
+        },
+        prev : function(){
+            if(this.current_ppt_id > 0)
+                this.current_ppt_id -= 1;
+        },
+    }
+});
+
+</script>
+
+
+</body>
