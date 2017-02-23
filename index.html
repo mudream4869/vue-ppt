@@ -51,12 +51,12 @@ h1{
 }
 
 .slide-fade-enter{
-    transform: translateX(50px);
+    transform: translateX(-50px);
     opacity: 0;
 } 
 
 .slide-fade-leave-active {
-    transform: translateX(50px);
+    transform: translateX(-50px);
     opacity: 0;
 }
 
@@ -64,10 +64,7 @@ h1{
 
 <div id="ppt">
     <transition-group name="slide-fade">
-        <div class="no-select page"
-             @click="next" @contextmenu="$event.preventDefault();prev();"
-             v-for="(ppt, index) in ppt_list" v-if="index === current_ppt_id" v-bind:key="index">
-            <h1>{{ppt.title}}</h1>
+        <div class="noselect page" v-for="(ppt, index) in ppt_list" v-if="index <= current_ppt_id" v-bind:key="index">
             <div v-html="ppt.content" class="content">
             </div>
         </div>
@@ -81,11 +78,19 @@ var ppt = new Vue({
     data: {
         current_ppt_id : 0,
         ppt_list : [{
-            "title" : "IF的語法",
-            "content" : "<a href='#'>內容</a>"
+            content : `
+                <div>大平台</div>
+            `
         }, {
-            "title" : "IF的實際例子",
-            "content" : "內容"
+            content : `
+                <h1>標題哈哈</h1>
+                <a href='#'>內容</a>
+            `
+        }, {
+            content : `
+                <h1>標題二</h1>
+                描述
+            `
         }]
     },
     computed: {
@@ -93,7 +98,18 @@ var ppt = new Vue({
             return this.ppt_list[this.current_ppt_id];
         }
     },
+    created: function () {
+        window.addEventListener('keyup', this.keyup);
+    },
     methods: {
+        keyup : function(e){
+            var event = window.event ? window.event : e;
+            console.log(e);
+            if(e.key == "ArrowLeft")
+                this.prev();
+            else if(e.key == "ArrowRight")
+                this.next();
+        },
         next : function(){
             if(this.current_ppt_id + 1 < this.ppt_list.length)
                 this.current_ppt_id += 1;
