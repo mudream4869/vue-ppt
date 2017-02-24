@@ -48,6 +48,8 @@ h1{
 }
 .slide-fade-leave-active {
     transition: all 0.3s cubic-bezier(1.0, 0.5, 0.8, 1.0);
+    transform: translateX(-50px);
+    opacity: 0;
 }
 
 .slide-fade-enter{
@@ -55,9 +57,12 @@ h1{
     opacity: 0;
 } 
 
-.slide-fade-leave-active {
-    transform: translateX(-50px);
-    opacity: 0;
+.fade-transition {
+      transition: opacity .3s ease;
+}
+
+.fade-enter, .fade-leave {
+      opacity: 0;
 }
 
 div.h-middle{
@@ -70,46 +75,68 @@ div.h-middle{
 
 <div id="ppt">
     <transition-group name="slide-fade">
-        <div class="noselect page" v-for="(ppt, index) in ppt_list" v-if="index <= current_ppt_id" v-bind:key="index">
-            <div v-html="ppt.content" class="content">
-            </div>
-        </div>
+        <component :is="ppt.templ" v-for="(ppt, index) in ppt_list" v-if="index <= current_ppt_id" v-bind:key="index">
+        </component>
     </transition-group>
 </div>
 
 <script>
+
+global_ppt_list = [{
+    content : `
+        <div class="h-middle v30"><h1>用vue.js做簡報就是潮</h1></div>
+        <div class="h-middle v55"><h4>帕秋莉♂诺蕾姬</h4></div>
+    `
+}, {
+    ani_cnt : 2,
+    content : `
+        <div class="h5 v0"><h1>分析</h1></div>
+        <div class="h5 v20">
+            <h2>好處：</h2>
+            <ul>
+                <li v-if="at(1)">潮</li>
+                <li v-if="at(2)">動畫？？</li>
+            </ul>
+        </div>
+    `
+}, {
+    content : `
+        <div class="h-middle v35"><h1>以上</h1></div>
+    `
+}];
+
+global_component_list = {};
+
+global_ppt_list.forEach(function(ppt, index){
+    templ = { 
+        template : 
+            '<div class="no-select page content" @click="$parent.next();" @contextmenu="$event.preventDefault(); $parent.prev();">' + 
+                ppt.content +
+            '</div>',
+        methods : {
+            at : function(x){
+                return this.$parent.$parent.current_ani_id >= x;
+            }
+        }
+    };
+    global_component_list["ppt" + index] = templ;
+    ppt['templ'] = templ;
+});
 
 var ppt = new Vue({
     el: "#ppt",
     data: {
         current_ppt_id : 0,
         current_ani_id : 0,
-        ppt_list : [{
-            content : `
-                <div class="h-middle v30"><h1>用vue.js做簡報就是潮</h1></div>
-                <div class="h-middle v55"><h4>帕秋莉♂诺蕾姬</h4></div>
-            `
-        }, {
-            ani_cnt : 1,
-            content : `
-                <div class="h5 v0"><h1>分析</h1></div>
-                <div class="h5 v20">
-                    <h2>好處：</h2>
-                    <ul>
-                        <li>潮</li>
-                        <li>動畫？？</li>
-                    </ul>
-                </div>
-            `
-        }, {
-            content : `
-                <div class="h-middle v35"><h1>以上</h1></div>
-            `
-        }]
+        ppt_list : global_ppt_list,
     },
+    components : global_component_list,
     computed: {
         current_ppt : function(){
             return this.ppt_list[this.current_ppt_id];
+        },
+        current_component : function(){
+            return global_component_list["ppt" + this.current_ppt_id]; 
         }
     },
     created: function () {
@@ -138,7 +165,7 @@ var ppt = new Vue({
             if(this.current_ani_id == 0){
                 if(this.current_ppt_id > 0){
                     this.current_ppt_id -= 1;
-                    this.current_ani_id = this.current_ppt.ani_cnt || 0;
+                    this.current_ani_id = 0;
                 }
                 return;
             }
