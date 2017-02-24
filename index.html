@@ -83,12 +83,14 @@ var ppt = new Vue({
     el: "#ppt",
     data: {
         current_ppt_id : 0,
+        current_ani_id : 0,
         ppt_list : [{
             content : `
                 <div class="h-middle v30"><h1>用vue.js做簡報就是潮</h1></div>
                 <div class="h-middle v55"><h4>帕秋莉♂诺蕾姬</h4></div>
             `
         }, {
+            ani_cnt : 1,
             content : `
                 <div class="h5 v0"><h1>分析</h1></div>
                 <div class="h5 v20">
@@ -123,12 +125,24 @@ var ppt = new Vue({
                 this.next();
         },
         next : function(){
-            if(this.current_ppt_id + 1 < this.ppt_list.length)
-                this.current_ppt_id += 1;
+            if(!("ani_cnt" in this.current_ppt) || this.current_ppt.ani_cnt <= this.current_ani_id){
+                if(this.current_ppt_id + 1 < this.ppt_list.length){
+                    this.current_ppt_id += 1;
+                    this.current_ani_id = 0;
+                }
+                return;
+            }
+            this.current_ani_id += 1;
         },
         prev : function(){
-            if(this.current_ppt_id > 0)
-                this.current_ppt_id -= 1;
+            if(this.current_ani_id == 0){
+                if(this.current_ppt_id > 0){
+                    this.current_ppt_id -= 1;
+                    this.current_ani_id = this.current_ppt.ani_cnt || 0;
+                }
+                return;
+            }
+            this.current_ani_id -= 1;
         },
     }
 });
