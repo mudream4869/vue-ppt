@@ -71,6 +71,25 @@ div.h-middle{
     text-align: center;
 }
 
+.enhance-enter-active {
+      animation: enhance-in .5s;
+}
+
+.enhance-leave-active {
+}
+
+@keyframes enhance-in {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.5);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
 </style>
 
 <div id="ppt">
@@ -88,20 +107,34 @@ global_ppt_list = [{
         <div class="h-middle v55"><h4>帕秋莉♂诺蕾姬</h4></div>
     `
 }, {
-    ani_cnt : 2,
+    ani_cnt : 4,
     content : `
         <div class="h5 v0"><h1>分析</h1></div>
         <div class="h5 v20">
             <h2>好處：</h2>
-            <ul>
-                <li v-if="at(1)">潮</li>
-                <li v-if="at(2)">動畫？？</li>
-            </ul>
+            <transition-group tag="ul" name="slide-fade">
+                <li v-if="at(1)" key="k1">潮</li>
+                <li v-if="at(2)" key="k2">動畫？？</li>
+            </transition-group>
         </div>
+        <transition name="slide-fade">
+            <div class="h50 v20" v-if="at(3)">
+                <h2>壞處：</h2>
+                <ul>
+                    <li>難想</li>
+                    <li>要用<code>javascript</code></li>
+                </ul>
+            </div>
+        </transition>
+        <transition name="enhance">
+            <div class="h-middle v60" v-if="at(4)">
+                <h1>那還等什麼？？</h1>
+            </div>
+        </transition>
     `
 }, {
     content : `
-        <div class="h-middle v35"><h1>以上</h1></div>
+        <div class="h-middle v35"><h1>以上，姆Ｑ！</h1></div>
     `
 }];
 
@@ -110,7 +143,7 @@ global_component_list = {};
 global_ppt_list.forEach(function(ppt, index){
     templ = { 
         template : 
-            '<div class="no-select page content" @click="$parent.next();" @contextmenu="$event.preventDefault(); $parent.prev();">' + 
+            '<div class="no-select page content">' + 
                 ppt.content +
             '</div>',
         methods : {
